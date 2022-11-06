@@ -3,7 +3,7 @@
   typeof define === 'function' && define.amd ? define('Az.DAWG', ['Az'], factory) :
   (global.Az = global.Az || {}) && (global.Az.DAWG = factory(global.Az))
 }(this, function (Az) { 'use strict';
-  var ROOT = 0,
+  let ROOT = 0,
       MISSING = -1,
       PRECISION_MASK = 0xFFFFFFFF,
       HAS_LEAF_BIT = 1 << 8,
@@ -11,7 +11,7 @@
       OFFSET_MAX = 1 << 21,
       IS_LEAF_BIT = 1 << 31;
 
-  var CP1251 = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 16,
+  let CP1251 = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 16,
     17: 17, 18: 18, 19: 19, 20: 20, 21: 21, 22: 22, 23: 23, 24: 24, 25: 25, 26: 26, 27: 27, 28: 28, 29: 29, 30: 30, 31: 31, 32: 32,
     33: 33, 34: 34, 35: 35, 36: 36, 37: 37, 38: 38, 39: 39, 40: 40, 41: 41, 42: 42, 43: 43, 44: 44, 45: 45, 46: 46, 47: 47, 48: 48,
     49: 49, 50: 50, 51: 51, 52: 52, 53: 53, 54: 54, 55: 55, 56: 56, 57: 57, 58: 58, 59: 59, 60: 60, 61: 61, 62: 62, 63: 63, 64: 64,
@@ -29,15 +29,15 @@
     1054: 206, 1095: 247, 1096: 248, 8249: 139, 1097: 249, 1098: 250, 1044: 196, 1099: 251, 1111: 191, 1055: 207, 1100: 252, 1038: 161, 8220: 147, 1101: 253,
     8250: 155, 1102: 254, 8216: 145, 1103: 255, 1043: 195, 1105: 184, 1039: 143, 1026: 128, 1106: 144, 8218: 130, 1107: 131, 8217: 146, 1108: 186, 1109: 190};
 
-  var UCS2 = {};
-  for (var k in CP1251) {
+  let UCS2 = {};
+  for (let k in CP1251) {
     UCS2[CP1251[k]] = String.fromCharCode(k);
     delete UCS2[0];
     delete UCS2[1];
   }
 
-  // Based on all common ЙЦУКЕН-keyboards (both Windows and Apple variations)
-  var COMMON_TYPOS = {
+  // Based on all common ЙЦУКЕН-keyboards (both Windows and Apple letiations)
+  let COMMON_TYPOS = {
     'й': 'иёцыф', 'ц': 'йфыву', 'у': 'цывак', 'к': 'увапе', 'е': 'эикапрн', 'н': 'епрог', 'г': 'нролш', 'ш': 'жголдщ', 'щ': 'шлджз', 'з': 'щджэх-', 'х': 'зжэъ-', 'ъ': 'ьхэ-ё',
     'ф': 'йцычяё', 'ы': 'иойцувсчяф', 'в': 'фцукамсчы', 'а': 'оукепимсв', 'п': 'кенртима', 'р': 'енгоьтип', 'о': 'ангшлбьтр', 'л': 'гшщдюбьо', 'д': 'шщзжюбл', 'ж': 'шщзхэюд', 'э': 'езхъжё',
     'ё': 'йфяъэ', 'я': 'еёфыч', 'ч': 'яфывс', 'с': 'зчывам', 'м': 'свапи', 'и': 'йяемапрт', 'т': 'дипроь', 'ь': 'ътролб', 'б': 'ьолдю', 'ю': 'блдж',
@@ -60,14 +60,14 @@
     return base & ~IS_LEAF_BIT & PRECISION_MASK;
   }
 
-  var DAWG = function(units, guide, format) {
+  let DAWG = function(units, guide, format) {
     this.units = units;
     this.guide = guide;
     this.format = format;
   }
 
   DAWG.fromArrayBuffer = function(data, format) {
-    var dv = new DataView(data),
+    let dv = new DataView(data),
         unitsLength = dv.getUint32(0, true),
         guideLength = dv.getUint32(unitsLength * 4 + 4, true);
     return new DAWG(
@@ -83,8 +83,8 @@
   }
 
   DAWG.prototype.followByte = function(c, index) {
-    var o = offset(this.units[index]);
-    var nextIndex = (index ^ o ^ (c & 0xFF)) & PRECISION_MASK;
+    let o = offset(this.units[index]);
+    let nextIndex = (index ^ o ^ (c & 0xFF)) & PRECISION_MASK;
 
     if (label(this.units[nextIndex]) != (c & 0xFF)) {
       return MISSING;
@@ -95,8 +95,8 @@
 
   DAWG.prototype.followString = function(str, index) {
     index = index || ROOT;
-    for (var i = 0; i < str.length; i++) {
-      var code = str.charCodeAt(i);
+    for (let i = 0; i < str.length; i++) {
+      let code = str.charCodeAt(i);
       if (!(code in CP1251)) {
         return MISSING;
       }
@@ -113,13 +113,13 @@
   }
 
   DAWG.prototype.value = function(index) {
-    var o = offset(this.units[index]);
-    var valueIndex = (index ^ o) & PRECISION_MASK;
+    let o = offset(this.units[index]);
+    let valueIndex = (index ^ o) & PRECISION_MASK;
     return value(this.units[valueIndex]);
   }
 
   DAWG.prototype.find = function(str) {
-    var index = this.followString(str);
+    let index = this.followString(str);
     if (index == MISSING) {
         return MISSING;
     }
@@ -130,11 +130,11 @@
   }
 
   DAWG.prototype.iterateAll = function(index) {
-    var results = [];
-    var stack = [index];
-    var key = [];
-    var last = ROOT;
-    var label;
+    let results = [];
+    let stack = [index];
+    let key = [];
+    let last = ROOT;
+    let label;
 
     while (true) {
       index = stack[stack.length - 1];
@@ -170,7 +170,7 @@
       }
 
       while (!this.hasValue(index)) {
-        var label = this.guide[index << 1];
+        let label = this.guide[index << 1];
         index = this.followByte(label, index);
         if (index == MISSING) {
           return results;
@@ -211,7 +211,7 @@
   DAWG.prototype.findAll = function(str, replaces, mstutter, mtypos) {
     mtypos = mtypos || 0;
     mstutter = mstutter || 0;
-    var results = [],
+    let results = [],
         prefixes = [['', 0, 0, 0, ROOT]],
         prefix, index, len, code, cur, typos, stutter;
 
@@ -223,7 +223,7 @@
       if (len == str.length) {
         if (typos < mtypos && stutter <= mstutter) {
           // Allow missing letter(s) at the very end
-          var label = this.guide[index << 1]; // First child
+          let label = this.guide[index << 1]; // First child
           do {
             cur = this.followByte(label, index);
             if ((cur != MISSING) && (label in UCS2)) {
@@ -268,7 +268,7 @@
 
         // Add a letter (missing)
         // TODO: iterate all childs?
-        var label = this.guide[index << 1]; // First child
+        let label = this.guide[index << 1]; // First child
         do {
           cur = this.followByte(label, index);
           if ((cur != MISSING) && (label in UCS2)) {
@@ -279,9 +279,9 @@
 
         // Replace a letter
         // Now it checks only most probable typos (located near to each other on keyboards)
-        var possible = COMMON_TYPOS[str[len]];
+        let possible = COMMON_TYPOS[str[len]];
         if (possible) {
-          for (var i = 0; i < possible.length; i++) {
+          for (let i = 0; i < possible.length; i++) {
             code = possible.charCodeAt(i);
             if (code in CP1251) {
               cur = this.followByte(CP1251[code], index);

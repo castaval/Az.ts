@@ -5,10 +5,10 @@
 }(this, function () { 'use strict';
   /** @namespace Az **/
   if (typeof require != 'undefined' && typeof exports === 'object' && typeof module !== 'undefined') {
-    var fs = require('fs');
+    let fs = require('fs');
   }
 
-  var Az = {
+  let Az = {
     load: function(url, responseType, callback) {
       if (fs) {
         fs.readFile(url, { encoding: responseType == 'json' ? 'utf8' : null }, function (err, data) {
@@ -24,9 +24,9 @@
             if (data.buffer) {
               callback(null, data.buffer);
             } else {
-              var ab = new ArrayBuffer(data.length);
-              var view = new Uint8Array(ab);
-              for (var i = 0; i < data.length; ++i) {
+              let ab = new ArrayBuffer(data.length);
+              let view = new Uint8Array(ab);
+              for (let i = 0; i < data.length; ++i) {
                   view[i] = data[i];
               }
               callback(null, ab);
@@ -38,7 +38,7 @@
         return;
       }
 
-      var xhr = new XMLHttpRequest();
+      let xhr = new XMLHttpRequest();
       xhr.open('GET', url, true);
       xhr.responseType = responseType;
 
@@ -51,9 +51,9 @@
       xhr.send(null);
     },
     extend: function() {
-      var result = {};
-      for (var i = 0; i < arguments.length; i++) {
-        for (var key in arguments[i]) {
+      let result = {};
+      for (let i = 0; i < arguments.length; i++) {
+        for (let key in arguments[i]) {
           result[key] = arguments[i][key];
         }
       }
