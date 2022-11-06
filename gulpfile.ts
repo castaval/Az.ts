@@ -11,7 +11,7 @@ var gulp = require('gulp'),
 
 gulp.task('docs', function () {
   return merge(
-    gulp.src(['src/az.tokens.js', 'src/az.morph.js'])
+    gulp.src(['src/az.tokens.js', 'src/az.morph.ts'])
       .pipe(jsdoc2md({ template: fs.readFileSync('./api.hbs', 'utf8') }))
       .on('error', function (err) {
         gutil.log(gutil.colors.red('jsdoc2md failed'), err.message)
