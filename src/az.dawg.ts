@@ -1,8 +1,11 @@
+declare var define: any;
+declare var Az: any;
+
 ;(function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? (module.exports = module.exports || {}) && (module.exports.DAWG = factory(module.exports)) :
   typeof define === 'function' && define.amd ? define('Az.DAWG', ['Az'], factory) :
   (global.Az = global.Az || {}) && (global.Az.DAWG = factory(global.Az))
-}(this, function (Az) { 'use strict';
+}(this, function (Az: any) { 'use strict';
   let ROOT = 0,
       MISSING = -1,
       PRECISION_MASK = 0xFFFFFFFF,
@@ -66,7 +69,7 @@
     this.format = format;
   }
 
-  DAWG.fromArrayBuffer: any = function(data: any, format: any): any {
+  DAWG.fromArrayBuffer = function(data: any, format: any) {
     let dv = new DataView(data),
         unitsLength = dv.getUint32(0, true),
         guideLength = dv.getUint32(unitsLength * 4 + 4, true);
