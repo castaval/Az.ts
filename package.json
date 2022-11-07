@@ -31,6 +31,7 @@
   },
   "homepage": "https://github.com/deNULL/Az.js#readme",
   "devDependencies": {
+    "@types/node": "^18.11.9",
     "blanket": "^1.2.3",
     "chai": "^3.5.0",
     "gulp": "^3.9.1",
