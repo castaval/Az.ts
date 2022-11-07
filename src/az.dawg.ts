@@ -11,7 +11,7 @@
       OFFSET_MAX = 1 << 21,
       IS_LEAF_BIT = 1 << 31;
 
-  let CP1251 = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 16,
+  let CP1251: any = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 16,
     17: 17, 18: 18, 19: 19, 20: 20, 21: 21, 22: 22, 23: 23, 24: 24, 25: 25, 26: 26, 27: 27, 28: 28, 29: 29, 30: 30, 31: 31, 32: 32,
     33: 33, 34: 34, 35: 35, 36: 36, 37: 37, 38: 38, 39: 39, 40: 40, 41: 41, 42: 42, 43: 43, 44: 44, 45: 45, 46: 46, 47: 47, 48: 48,
     49: 49, 50: 50, 51: 51, 52: 52, 53: 53, 54: 54, 55: 55, 56: 56, 57: 57, 58: 58, 59: 59, 60: 60, 61: 61, 62: 62, 63: 63, 64: 64,
@@ -29,7 +29,7 @@
     1054: 206, 1095: 247, 1096: 248, 8249: 139, 1097: 249, 1098: 250, 1044: 196, 1099: 251, 1111: 191, 1055: 207, 1100: 252, 1038: 161, 8220: 147, 1101: 253,
     8250: 155, 1102: 254, 8216: 145, 1103: 255, 1043: 195, 1105: 184, 1039: 143, 1026: 128, 1106: 144, 8218: 130, 1107: 131, 8217: 146, 1108: 186, 1109: 190};
 
-  let UCS2 = {};
+  let UCS2: any = {};
   for (let k in CP1251) {
     UCS2[CP1251[k]] = String.fromCharCode(k);
     delete UCS2[0];
@@ -44,29 +44,29 @@
     '1': 'ёйц', '2': 'йцу', '3': 'цук', '4': 'уке', '5': 'кен', '6': 'енг', '7': 'нгш', '8': 'гшщ', '9': 'шщз', '0': 'щзх-', '-': 'зхъ', '=': '-хъ', '\\': 'ъэ', '.': 'южэ'
   };
 
-  function offset(base) {
+  function offset(base: any): any {
     return ((base >> 10) << ((base & EXTENSION_BIT) >> 6)) & PRECISION_MASK;
   }
 
-  function label(base) {
+  function label(base: any): any {
     return base & (IS_LEAF_BIT | 0xFF) & PRECISION_MASK;
   }
 
-  function hasLeaf(base) {
+  function hasLeaf(base: any): any {
     return (base & HAS_LEAF_BIT & PRECISION_MASK) != 0;
   }
 
-  function value(base) {
+  function value(base: any): any {
     return base & ~IS_LEAF_BIT & PRECISION_MASK;
   }
 
-  let DAWG = function(units, guide, format) {
+  let DAWG = function(units: any, guide: any, format: any) {
     this.units = units;
     this.guide = guide;
     this.format = format;
   }
 
-  DAWG.fromArrayBuffer = function(data, format) {
+  DAWG.fromArrayBuffer: any = function(data: any, format: any): any {
     let dv = new DataView(data),
         unitsLength = dv.getUint32(0, true),
         guideLength = dv.getUint32(unitsLength * 4 + 4, true);
@@ -76,13 +76,13 @@
       format);
   }
 
-  DAWG.load = function(url, format, callback) {
-    Az.load(url, 'arraybuffer', function(err, data) {
+  DAWG.load = function(url: any, format: any, callback: any) {
+    Az.load(url, 'arraybuffer', function(err: any, data: any) {
       callback(err, err ? null : DAWG.fromArrayBuffer(data, format));
     });
   }
 
-  DAWG.prototype.followByte = function(c, index) {
+  DAWG.prototype.followByte = function(c: any, index: any): number {
     let o = offset(this.units[index]);
     let nextIndex = (index ^ o ^ (c & 0xFF)) & PRECISION_MASK;
 
@@ -93,7 +93,7 @@
     return nextIndex;
   }
 
-  DAWG.prototype.followString = function(str, index) {
+  DAWG.prototype.followString = function(str: any, index: any): number {
     index = index || ROOT;
     for (let i = 0; i < str.length; i++) {
       let code = str.charCodeAt(i);
@@ -108,17 +108,17 @@
     return index;
   }
 
-  DAWG.prototype.hasValue = function(index) {
+  DAWG.prototype.hasValue = function(index: any): any {
     return hasLeaf(this.units[index]);
   }
 
-  DAWG.prototype.value = function(index) {
+  DAWG.prototype.value = function(index: any): any {
     let o = offset(this.units[index]);
     let valueIndex = (index ^ o) & PRECISION_MASK;
     return value(this.units[valueIndex]);
   }
 
-  DAWG.prototype.find = function(str) {
+  DAWG.prototype.find = function(str: any): any {
     let index = this.followString(str);
     if (index == MISSING) {
         return MISSING;
@@ -129,7 +129,7 @@
     return this.value(index);
   }
 
-  DAWG.prototype.iterateAll = function(index) {
+  DAWG.prototype.iterateAll = function(index: any): any {
     let results = [];
     let stack = [index];
     let key = [];
@@ -208,7 +208,7 @@
   //    extra letters (свлово -> слово)
   //    missing letters (сово -> слово)
   //    wrong letters (сково -> слово)
-  DAWG.prototype.findAll = function(str, replaces, mstutter, mtypos) {
+  DAWG.prototype.findAll = function(str: string, replaces: any, mstutter: any, mtypos: any): any {
     mtypos = mtypos || 0;
     mstutter = mstutter || 0;
     let results = [],
