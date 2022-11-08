@@ -4,14 +4,15 @@
   global.Az = factory()
 }(this, function () { 'use strict';
   /** @namespace Az **/
+  let fs: any;
   if (typeof require != 'undefined' && typeof exports === 'object' && typeof module !== 'undefined') {
-    let fs = require('fs');
+    fs = require('fs');
   }
 
   let Az = {
-    load: function(url, responseType, callback) {
+    load: function(url: any, responseType: any, callback: any) {
       if (fs) {
-        fs.readFile(url, { encoding: responseType == 'json' ? 'utf8' : null }, function (err, data) {
+        fs.readFile(url, { encoding: responseType == 'json' ? 'utf8' : null }, function (err: any, data: any) {
           if (err) {
             callback(err);
             return;
@@ -51,7 +52,7 @@
       xhr.send(null);
     },
     extend: function() {
-      let result = {};
+      let result: any = {};
       for (let i = 0; i < arguments.length; i++) {
         for (let key in arguments[i]) {
           result[key] = arguments[i][key];

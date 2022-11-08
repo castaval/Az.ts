@@ -2,16 +2,16 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? (module.exports = module.exports || {}) && (module.exports.Morph = factory(module.exports)) :
   typeof define === 'function' && define.amd ? define('Az.Morph', ['Az', 'Az.DAWG'], factory) :
   (global.Az = global.Az || {}) && (global.Az.Morph = factory(global.Az))
-}(this, function (Az) { 'use strict';
+}(this, function (Az: any) { 'use strict';
   /** @namespace Az **/
-  let words,
-      probabilities,
+  let words: any,
+      probabilities: any,
       predictionSuffixes = new Array(3),
       prefixes = [ '', 'по', 'наи' ],
-      suffixes,
-      grammemes,
-      paradigms,
-      tags,
+      suffixes: any,
+      grammemes: any,
+      paradigms: any,
+      tags: any,
       defaults = {
         ignoreCase: false,
         replacements: { 'е': 'ё' },
@@ -48,12 +48,12 @@
         'экзо', 'эко', 'эндо', 'эконом-', 'экс', 'экс-', 'экстра', 'экстра-', 'электро', 'энерго', 'этно'
       ],
       autoTypos = [4, 9],
-      UNKN,
-      __init = [],
+      UNKN: any,
+      __init: any = [],
       initialized = false;
 
   // Взято из https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze
-  function deepFreeze(obj) {
+  function deepFreeze(obj: any) {
     if (!('freeze' in Object)) {
       return;
     }
@@ -84,7 +84,7 @@
    * @property {string[]} flex Полный список изменяемых граммем.
    * @property {Tag} ext Копия тега с русскими обозначениями (по версии OpenCorpora).
    */
-  let Tag = function(str) {
+  let Tag: any = function(str: string) {
     let par, pair = str.split(' ');
     this.stat = pair[0].split(',');
     this.flex = pair[1] ? pair[1].split(',') : [];
@@ -138,7 +138,7 @@
    * @returns {boolean} Является ли текущий тег согласованным с указанным.
    */
   // TODO: научиться понимать, что некоторые граммемы можно считать эквивалентными при сравнении двух тегов (вариации падежей и т.п.)
-  Tag.prototype.matches = function(tag, grammemes) {
+  Tag.prototype.matches = function(tag: any, grammemes: any) {
     if (!grammemes) {
       if (Object.prototype.toString.call(tag) === '[object Array]') {
         for (let i = 0; i < tag.length; i++) {
@@ -188,7 +188,7 @@
     return this.Name || this.Surn || this.Patr || this.Geox || this.Init;
   }
 
-  function makeTag(tagInt, tagExt) {
+  function makeTag(tagInt: any, tagExt: any) {
     let tag = new Tag(tagInt);
     tag.ext = new Tag(tagExt);
     return deepFreeze(tag);
@@ -249,14 +249,14 @@
    * @returns {Parse[]} Варианты разбора.
    * @memberof Az
    */
-  let Morph = function(word, config) {
+  let Morph: any = function(word: any, config: any) {
     if (!initialized) {
       throw new Error('Please call Az.Morph.init() before using this module.');
     }
 
     config = config ? Az.extend(defaults, config) : defaults;
 
-    let parses = [];
+    let parses: any = [];
     let matched = false;
     for (let i = 0; i < config.parsers.length; i++) {
       let name = config.parsers[i];
@@ -320,7 +320,7 @@
       }
     }
 
-    parses.sort(function(e1, e2) {
+    parses.sort(function(e1: any, e2: any) {
       return e2.score - e1.score;
     });
 
@@ -342,7 +342,7 @@
    * @property {number} stutterCnt Число «заиканий», исправленных в слове.
    * @property {number} typosCnt Число опечаток, исправленных в слове.
    */
-  let Parse = function(word, tag, score, stutterCnt, typosCnt) {
+  let Parse: any = function(word: any, tag: any, score: any, stutterCnt: any, typosCnt: any) {
     this.word = word;
     this.tag = tag;
     this.stutterCnt = stutterCnt || 0;
@@ -359,7 +359,7 @@
    *  если произвести нормализацию не удалось.
    */
   // TODO: некоторые смены частей речи, возможно, стоит делать в любом случае (т.к., например, компаративы, краткие формы причастий и прилагательных разделены, инфинитив отделен от глагола)
-  Parse.prototype.normalize = function(keepPOS) {
+  Parse.prototype.normalize = function(keepPOS: any) {
     return this.inflect(keepPOS ? { POS: this.tag.POS } : 0);
   }
 
@@ -373,7 +373,7 @@
    *  если произвести согласование не удалось.
    * @see Tag.matches
    */
-  Parse.prototype.inflect = function(tag, grammemes) {
+  Parse.prototype.inflect = function(tag: any, grammemes: any) {
     return this;
   }
 
@@ -385,7 +385,7 @@
    * @returns {Parse|False} Разбор, соответствующий указанному числу или False,
    *  если произвести согласование не удалось.
    */
-  Parse.prototype.pluralize = function(number) {
+  Parse.prototype.pluralize = function(number: any) {
     if (!this.tag.NOUN && !this.tag.ADJF && !this.tag.PRTF) {
       return this;
     }
@@ -428,7 +428,7 @@
    * @returns {boolean} Является ли текущая форма слова согласованной с указанной.
    * @see Tag.matches
    */
-  Parse.prototype.matches = function(tag, grammemes) {
+  Parse.prototype.matches = function(tag: any, grammemes: any) {
     return this.tag.matches(tag, grammemes);
   }
 
@@ -449,7 +449,7 @@
     console.groupEnd();
   }
 
-  function lookup(dawg, word, config) {
+  function lookup(dawg: any, word: any, config: any) {
     let entries;
     if (config.typos == 'auto') {
       entries = dawg.findAll(word, config.replacements, config.stutter, 0);
@@ -462,11 +462,11 @@
     return entries;
   }
 
-  function getDictionaryScore(stutterCnt, typosCnt) {
+  function getDictionaryScore(stutterCnt: any, typosCnt: any) {
     return Math.pow(0.3, typosCnt) * Math.pow(0.6, Math.min(stutterCnt, 1));
   }
 
-  let DictionaryParse = function(word, paradigmIdx, formIdx, stutterCnt, typosCnt, prefix, suffix) {
+  let DictionaryParse: any = function(word: any, paradigmIdx: any, formIdx: any, stutterCnt: any, typosCnt: any, prefix: any, suffix: any) {
     this.word = word;
     this.paradigmIdx = paradigmIdx;
     this.paradigm = paradigms[paradigmIdx];
@@ -496,7 +496,7 @@
 
   // Склоняет/спрягает слово так, чтобы оно соответствовало граммемам другого слова, тега или просто конкретным граммемам (подробнее см. Tag.prototype.matches).
   // Всегда выбирается первый подходящий вариант.
-  DictionaryParse.prototype.inflect = function(tag, grammemes) {
+  DictionaryParse.prototype.inflect = function(tag: any, grammemes: any) {
     if (!grammemes && typeof tag === 'number') {
       // Inflect to specific formIdx
       return new DictionaryParse(
@@ -550,7 +550,7 @@
     }
   }
 
-  let CombinedParse = function(left, right) {
+  let CombinedParse: any = function(left: any, right: any) {
     this.left = left;
     this.right = right;
     this.tag = right.tag;
@@ -565,10 +565,10 @@
   CombinedParse.prototype = Object.create(Parse.prototype);
   CombinedParse.prototype.constructor = CombinedParse;
 
-  CombinedParse.prototype.inflect = function(tag, grammemes) {
-    let left, right;
+  CombinedParse.prototype.inflect = function(tag: any, grammemes: any) {
+    let left, right: any;
 
-    let right = this.right.inflect(tag, grammemes);
+    right = this.right.inflect(tag, grammemes);
     if (!grammemes && typeof tag === 'number') {
       left = this.left.inflect(right.tag, ['POST', 'NMbr', 'CAse', 'PErs', 'TEns']);
     } else {
@@ -586,7 +586,7 @@
   }
 
   __init.push(function() {
-    Morph.Parsers.Dictionary = function(word, config) {
+    Morph.Parsers.Dictionary = function(word: any, config: any) {
       let isCapitalized =
         !config.ignoreCase && word.length &&
         (word[0].toLocaleLowerCase() != word[0]) &&
@@ -612,7 +612,7 @@
       return lets;
     }
 
-    let abbrTags = [];
+    let abbrTags: any = [];
     for (let i = 0; i <= 2; i++) {
       for (let j = 0; j <= 5; j++) {
         for (let k = 0; k <= 1; k++) {
@@ -626,7 +626,7 @@
 
     // Произвольные аббревиатуры (несклоняемые)
     // ВК, ЖК, ССМО, ОАО, ЛенСпецСМУ
-    Morph.Parsers.Abbr = function(word, config) {
+    Morph.Parsers.Abbr = function(word: any, config: any) {
       // Однобуквенные считаются инициалами и для них заведены отдельные парсеры
       if (word.length < 2) {
         return [];
@@ -672,8 +672,8 @@
       return lets;
     }
 
-    let InitialsParser = function(isPatronymic, score) {
-      let initialsTags = [];
+    let InitialsParser = function(isPatronymic: any, score: any) {
+      let initialsTags: any = [];
       for (let i = 0; i <= 1; i++) {
         for (let j = 0; j <= 5; j++) {
           initialsTags.push(makeTag(
@@ -682,7 +682,7 @@
           ));
         }
       }
-      return function(word, config) {
+      return function(word: any, config: any) {
         if (word.length != 1) {
           return [];
         }
@@ -704,8 +704,8 @@
     Morph.Parsers.AbbrName = InitialsParser(false, 0.1);
     Morph.Parsers.AbbrPatronymic = InitialsParser(true, 0.1);
 
-    let RegexpParser = function(regexp, tag, score) {
-      return function(word, config) {
+    let RegexpParser: any = function(regexp: any, tag: any, score: any) {
+      return function(word: any, config: any) {
         if (config.ignoreCase) {
           word = word.toLocaleUpperCase();
         }
@@ -746,7 +746,7 @@
 
     // слово + частица
     // смотри-ка
-    Morph.Parsers.HyphenParticle = function(word, config) {
+    Morph.Parsers.HyphenParticle = function(word: any, config: any) {
       word = word.toLocaleLowerCase();
 
       let lets = [];
@@ -779,7 +779,7 @@
 
     // 'по-' + прилагательное в дательном падеже
     // по-западному
-    Morph.Parsers.HyphenAdverb = function(word, config) {
+    Morph.Parsers.HyphenAdverb = function(word: any, config: any) {
       word = word.toLocaleLowerCase();
 
       if ((word.length < 5) || (word.substr(0, 3) != 'по-')) {
@@ -789,7 +789,7 @@
       let opts = lookup(words, word.substr(3), config);
 
       let parses = [];
-      let used = {};
+      let used: any = {};
 
       for (let i = 0; i < opts.length; i++) {
         if (!used[opts[i][0]]) {
@@ -811,7 +811,7 @@
     // слово + '-' + слово
     // интернет-магазин
     // компания-производитель
-    Morph.Parsers.HyphenWords = function(word, config) {
+    Morph.Parsers.HyphenWords = function(word: any, config: any) {
       word = word.toLocaleLowerCase();
       for (let i = 0; i < knownPrefixes.length; i++) {
         if (knownPrefixes[i][knownPrefixes[i].length - 1] == '-' &&
@@ -867,7 +867,7 @@
       return parses;
     }
 
-    Morph.Parsers.PrefixKnown = function(word, config) {
+    Morph.Parsers.PrefixKnown = function(word: any, config: any) {
       let isCapitalized =
         !config.ignoreCase && word.length &&
         (word[0].toLocaleLowerCase() != word[0]) &&
@@ -898,7 +898,7 @@
       return parses;
     }
 
-    Morph.Parsers.PrefixUnknown = function(word, config) {
+    Morph.Parsers.PrefixUnknown = function(word: any, config: any) {
       let isCapitalized =
         !config.ignoreCase && word.length &&
         (word[0].toLocaleLowerCase() != word[0]) &&
@@ -927,7 +927,7 @@
     }
 
     // Отличие от предсказателя по суффиксам в pymorphy2: найдя подходящий суффикс, проверяем ещё и тот, что на символ короче
-    Morph.Parsers.SuffixKnown = function(word, config) {
+    Morph.Parsers.SuffixKnown = function(word: any, config: any) {
       if (word.length < 4) {
         return [];
       }
@@ -936,10 +936,10 @@
         (word[0].toLocaleLowerCase() != word[0]) &&
         (word.substr(1).toLocaleUpperCase() != word.substr(1));
       word = word.toLocaleLowerCase();
-      let parses = [];
+      let parses: any = [];
       let minlen = 1;
       let coeffs = [0, 0.2, 0.3, 0.4, 0.5, 0.6];
-      let used = {};
+      let used: any = {};
       for (let i = 0; i < prefixes.length; i++) {
         if (prefixes[i].length && (word.substr(0, prefixes[i].length) != prefixes[i])) {
           continue;
@@ -1006,7 +1006,7 @@
    * @param {Object} config Опции анализатора.
    * @see Morph
    */
-  Morph.setDefaults = function(config) {
+  Morph.setDefaults = function(config: any) {
     defaults = config;
   }
 
@@ -1020,9 +1020,9 @@
    * @param {Function} callback Коллбэк, вызываемый после завершения загрузки
    *  всех словарей.
    */
-  Morph.init = function(path, callback) {
+  Morph.init = function(path: any, callback: any) {
     let loading = 0;
-    let tagsInt, tagsExt;
+    let tagsInt: any, tagsExt: any;
     function loaded() {
       if (!--loading) {
         tags = Array(tagsInt.length);
@@ -1049,7 +1049,7 @@
     }
 
     loading++;
-    Az.DAWG.load(path + '/words.dawg', 'words', function(err, dawg) {
+    Az.DAWG.load(path + '/words.dawg', 'words', function(err: any, dawg: any) {
       if (err) {
         callback(err);
         return;
@@ -1061,7 +1061,7 @@
     for (let prefix = 0; prefix < 3; prefix++) {
       (function(prefix) {
         loading++;
-        Az.DAWG.load(path + '/prediction-suffixes-' + prefix + '.dawg', 'probs', function(err, dawg) {
+        Az.DAWG.load(path + '/prediction-suffixes-' + prefix + '.dawg', 'probs', function(err: any, dawg: any) {
           if (err) {
             callback(err);
             return;
@@ -1073,7 +1073,7 @@
     }
 
     loading++;
-    Az.DAWG.load(path + '/p_t_given_w.intdawg', 'int', function(err, dawg) {
+    Az.DAWG.load(path + '/p_t_given_w.intdawg', 'int', function(err: any, dawg: any) {
       if (err) {
         callback(err);
         return;
@@ -1083,7 +1083,7 @@
     });
 
     loading++;
-    Az.load(path + '/grammemes.json', 'json', function(err, json) {
+    Az.load(path + '/grammemes.json', 'json', function(err: any, json: any) {
       if (err) {
         callback(err);
         return;
@@ -1101,7 +1101,7 @@
     });
 
     loading++;
-    Az.load(path + '/gramtab-opencorpora-int.json', 'json', function(err, json) {
+    Az.load(path + '/gramtab-opencorpora-int.json', 'json', function(err: any, json: any) {
       if (err) {
         callback(err);
         return;
@@ -1111,7 +1111,7 @@
     });
 
     loading++;
-    Az.load(path + '/gramtab-opencorpora-ext.json', 'json', function(err, json) {
+    Az.load(path + '/gramtab-opencorpora-ext.json', 'json', function(err: any, json: any) {
       if (err) {
         callback(err);
         return;
@@ -1121,7 +1121,7 @@
     });
 
     loading++;
-    Az.load(path + '/suffixes.json', 'json', function(err, json) {
+    Az.load(path + '/suffixes.json', 'json', function(err: any, json: any) {
       if (err) {
         callback(err);
         return;
@@ -1131,7 +1131,7 @@
     });
 
     loading++;
-    Az.load(path + '/paradigms.array', 'arraybuffer', function(err, data) {
+    Az.load(path + '/paradigms.array', 'arraybuffer', function(err: any, data: any) {
       if (err) {
         callback(err);
         return;
