@@ -34,13 +34,13 @@ declare var Az: any;
 
   let UCS2: any = {};
   for (let k in CP1251) {
-    UCS2[CP1251[k]] = String.fromCharCode(k);
+    UCS2[CP1251[k]] = String.fromCharCode(+k);
     delete UCS2[0];
     delete UCS2[1];
   }
 
   // Based on all common ЙЦУКЕН-keyboards (both Windows and Apple letiations)
-  let COMMON_TYPOS = {
+  let COMMON_TYPOS: any = {
     'й': 'иёцыф', 'ц': 'йфыву', 'у': 'цывак', 'к': 'увапе', 'е': 'эикапрн', 'н': 'епрог', 'г': 'нролш', 'ш': 'жголдщ', 'щ': 'шлджз', 'з': 'щджэх-', 'х': 'зжэъ-', 'ъ': 'ьхэ-ё',
     'ф': 'йцычяё', 'ы': 'иойцувсчяф', 'в': 'фцукамсчы', 'а': 'оукепимсв', 'п': 'кенртима', 'р': 'енгоьтип', 'о': 'ангшлбьтр', 'л': 'гшщдюбьо', 'д': 'шщзжюбл', 'ж': 'шщзхэюд', 'э': 'езхъжё',
     'ё': 'йфяъэ', 'я': 'еёфыч', 'ч': 'яфывс', 'с': 'зчывам', 'м': 'свапи', 'и': 'йяемапрт', 'т': 'дипроь', 'ь': 'ътролб', 'б': 'ьолдю', 'ю': 'блдж',
@@ -63,13 +63,13 @@ declare var Az: any;
     return base & ~IS_LEAF_BIT & PRECISION_MASK;
   }
 
-  let DAWG = function(units: any, guide: any, format: any) {
+  let DAWG: any = function(units: any, guide: any, format: any) {
     this.units = units;
     this.guide = guide;
     this.format = format;
   }
 
-  DAWG.fromArrayBuffer = function(data: any, format: any) {
+  DAWG.fromArrayBuffer = function(data: any, format: any): any {
     let dv = new DataView(data),
         unitsLength = dv.getUint32(0, true),
         guideLength = dv.getUint32(unitsLength * 4 + 4, true);
@@ -211,12 +211,12 @@ declare var Az: any;
   //    extra letters (свлово -> слово)
   //    missing letters (сово -> слово)
   //    wrong letters (сково -> слово)
-  DAWG.prototype.findAll = function(str: string, replaces: any, mstutter: any, mtypos: any): any {
+  DAWG.prototype.findAll = function(str: any, replaces: any, mstutter: any, mtypos: any): any {
     mtypos = mtypos || 0;
     mstutter = mstutter || 0;
     let results = [],
         prefixes = [['', 0, 0, 0, ROOT]],
-        prefix, index, len, code, cur, typos, stutter;
+        prefix, index: any, len: any, code, cur, typos: any, stutter: any;
 
     while (prefixes.length) {
       prefix = prefixes.pop();
